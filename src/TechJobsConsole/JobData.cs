@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -8,11 +9,14 @@ namespace TechJobsConsole
     class JobData
     {
         static List<Dictionary<string, string>> AllJobs = new List<Dictionary<string, string>>();
+
         static bool IsDataLoaded = false;
+
 
         public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
+            
             return AllJobs;
         }
 
@@ -25,6 +29,7 @@ namespace TechJobsConsole
             LoadData();
 
             List<string> values = new List<string>();
+            
 
             foreach (Dictionary<string, string> job in AllJobs)
             {
@@ -35,6 +40,7 @@ namespace TechJobsConsole
                     values.Add(aValue);
                 }
             }
+            values.Sort();
             return values;
         }
 
@@ -47,9 +53,9 @@ namespace TechJobsConsole
 
             foreach (Dictionary<string, string> row in AllJobs)
             {
-                string aValue = row[column];
+                string aValue = row[column].ToLower();
 
-                if (aValue.Contains(value))
+                if (aValue.Contains(value.ToLower()))
                 {
                     jobs.Add(row);
                 }
@@ -58,6 +64,31 @@ namespace TechJobsConsole
             return jobs;
         }
 
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            // load data, if not already loaded
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs) 
+            {
+                foreach (KeyValuePair<string, string> kvp in job)
+                {
+                    if (kvp.Value.ToLower().Contains(value.ToLower()))
+                    {
+
+                        jobs.Add(job);
+                        break;
+                    }
+
+
+                }
+                               
+            }  
+
+            return jobs;
+        }
         /*
          * Load and parse data from job_data.csv
          */
